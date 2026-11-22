@@ -1,0 +1,12 @@
+.venv/
+__pycache__/
+*.pyc
+dist/
+build/
+*.egg-info/
+.DS_Store
+# a project's own photos and outputs, when trying quick-editor inside this repo
+inbox/
+sessions/
+out/
+quick-editor.toml

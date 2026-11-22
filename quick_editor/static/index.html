@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>quick-editor</title>
+  <link rel="icon" href="data:," />
+  <link rel="stylesheet" href="/static/studio.css" />
+</head>
+<body>
+  <aside class="files">
+    <header>
+      <strong>quick-editor</strong>
+      <button type="button" id="refresh" title="Reload the inbox">↻</button>
+    </header>
+    <p class="hint"><b id="project-name"></b><br /><span id="inbox-path"></span></p>
+    <ul id="file-list"></ul>
+  </aside>
+
+  <main>
+    <nav class="steps" id="steps" aria-label="Steps">
+      <button type="button" data-step="1">1 · Frame</button>
+      <button type="button" data-step="2">2 · Clean</button>
+      <button type="button" data-step="3">3 · Pieces</button>
+      <button type="button" data-step="4">4 · Review</button>
+      <span class="status" id="status" role="status" aria-live="polite"></span>
+    </nav>
+
+    <div class="workspace">
+      <section class="stage-wrap" id="stage-wrap">
+        <div class="empty" id="empty">
+          <p>Pick a photo on the left.</p>
+          <p class="hint">Put photos in the inbox folder shown on the left. JPG, PNG, HEIC, AVIF, TIFF and WebP work.</p>
+        </div>
+        <div class="stage" id="stage" hidden>
+          <img id="img" alt="" draggable="false" />
+          <svg id="overlay" xmlns="http://www.w3.org/2000/svg"></svg>
+        </div>
+        <div class="review" id="review" hidden></div>
+      </section>
+
+      <aside class="controls" id="controls">
+        <!-- step 1 -->
+        <section data-panel="1">
+          <h2>Frame the page</h2>
+          <p class="hint">Drag the four corners onto the page's corners. Everything outside is ignored and the page is straightened.</p>
+          <div class="row">
+            <button type="button" id="rot-left" title="Rotate left">⟲ Rotate</button>
+            <button type="button" id="rot-right" title="Rotate right">Rotate ⟳</button>
+          </div>
+          <div class="row">
+            <button type="button" id="auto-frame">Auto-detect page</button>
+            <button type="button" id="whole-frame">Whole photo</button>
+          </div>
+          <button type="button" class="primary" data-goto="2">Next: clean →</button>
+        </section>
+
+        <!-- step 2 -->
+        <section data-panel="2">
+          <h2>Clean</h2>
+          <div class="seg" role="radiogroup" aria-label="Show">
+            <label><input type="radio" name="view" value="ink" checked /> Ink</label>
+            <label><input type="radio" name="view" value="flat" /> Flattened</label>
+            <label><input type="radio" name="view" value="photo" /> Photo</label>
+          </div>
+          <label>Lighting <small>broad shadows ↔ local</small><input type="range" data-setting="lighting" min="0" max="1" step="0.01" /></label>
+          <label>Grain smoothing<input type="range" data-setting="smooth" min="0" max="1" step="0.01" /></label>
+          <label>Sensitivity <small>keeps fainter strokes</small><input type="range" data-setting="sensitivity" min="0" max="1" step="0.01" /></label>
+          <label>Faint lines <small>lightest tone counted as ink</small><input type="range" data-setting="faint" min="0" max="1" step="0.01" /></label>
+          <label>Remove specks<input type="range" data-setting="specks" min="0" max="1" step="0.01" /></label>
+          <label>Line weight <small>thinner ↔ thicker</small><input type="range" data-setting="weight" min="-1" max="1" step="0.05" /></label>
+          <label class="check"><input type="checkbox" data-setting="invert" /> Light ink on dark surface</label>
+          <h3>Areas</h3>
+          <p class="hint">Any shape, any number of points. Click to place points; click the first point (or double-click, or <kbd>Enter</kbd>) to close. <kbd>Esc</kbd> cancels, <kbd>Backspace</kbd> undoes a point. Click an area to select it, <kbd>Delete</kbd> removes it.</p>
+          <div class="row">
+            <button type="button" id="area-erase" title="Remove ink inside a shape: spiral binding, fingers, notes, show-through">Erase area</button>
+            <button type="button" id="area-keep" title="Only keep ink inside a shape (e.g. the real edge of a curled page)">Keep only area</button>
+          </div>
+          <button type="button" id="area-clear">Clear areas</button>
+          <div class="row">
+            <button type="button" id="reset-clean">Reset</button>
+            <button type="button" id="copy-prev" title="Use the cleaning settings of the last photo you saved">Use last settings</button>
+          </div>
+          <button type="button" class="primary" data-goto="3">Next: pieces →</button>
+        </section>
+
+        <!-- step 3 -->
+        <section data-panel="3">
+          <h2>Pieces</h2>
+          <div class="seg" role="radiogroup" aria-label="Tool">
+            <label><input type="radio" name="tool" value="box" checked /> Box</label>
+            <label><input type="radio" name="tool" value="lasso" /> Lasso</label>
+          </div>
+          <p class="hint"><b>Box:</b> drag on empty space to draw one. <b>Lasso:</b> click points around a drawing, any shape; click the first point to close. Click a piece to select it (shift-click for more), drag to move, drag a box's corners to resize. <kbd>Delete</kbd> removes.</p>
+          <label>Group strokes closer than<input type="range" id="gap" min="0.001" max="0.03" step="0.0005" /></label>
+          <label>Ignore pieces smaller than<input type="range" id="min-size" min="0.005" max="0.2" step="0.005" /></label>
+          <button type="button" id="detect">Detect pieces</button>
+          <div class="row">
+            <button type="button" id="merge" disabled>Merge</button>
+            <button type="button" id="remove" disabled>Delete</button>
+          </div>
+          <label class="check"><input type="checkbox" id="isolate" disabled /> Only this piece's strokes <small>(ignore neighbours inside the box)</small></label>
+          <p class="hint" id="box-count"></p>
+          <button type="button" class="primary" data-goto="4">Next: review →</button>
+        </section>
+
+        <!-- step 4 -->
+        <section data-panel="4">
+          <h2>Review &amp; save</h2>
+          <label>Tracing <small>sharp corners ↔ round curves</small><input type="range" data-setting="curves" min="0" max="1" step="0.05" /></label>
+          <div class="seg" role="radiogroup" aria-label="Preview on">
+            <label><input type="radio" name="bg" value="transparent" checked /> Transparent</label>
+            <label><input type="radio" name="bg" value="dark" /> Dark</label>
+            <label><input type="radio" name="bg" value="cutout" /> Cutout</label>
+          </div>
+          <label>Collection for new pieces
+            <select id="default-collection"></select>
+          </label>
+          <p class="hint">Saved pieces go into the project's catalog as <b>drafts</b> (<code>"status": "draft"</code>).</p>
+          <button type="button" class="primary" id="save">Save checked pieces</button>
+          <ul class="results" id="results"></ul>
+        </section>
+      </aside>
+    </div>
+  </main>
+
+  <template id="card">
+    <article class="card">
+      <div class="preview"><img class="backing" alt="" hidden /><img class="ink" alt="" /><span class="loading">Tracing…</span></div>
+      <div class="fields">
+        <label class="check"><input type="checkbox" name="include" checked /> Save</label>
+        <label>Name <input type="text" name="name" placeholder="a name for this drawing" /></label>
+        <label>Tags <input type="text" name="tags" placeholder="comma, separated, words" /></label>
+        <div class="row">
+          <label class="kind">Kind <select name="category"></select></label>
+          <label>Collection <select name="collection"></select></label>
+        </div>
+        <label>Replaces <select name="replaces"><option value="">nothing (new asset)</option></select></label>
+        <label class="check"><input type="checkbox" name="backing" /> Also save a solid backing shape</label>
+        <p class="meta hint"></p>
+        <p class="quality" role="status" hidden></p>
+      </div>
+    </article>
+  </template>
+
+  <script type="module" src="/static/studio.js"></script>
+</body>
+</html>
