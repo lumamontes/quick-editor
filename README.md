@@ -2,9 +2,9 @@
 
 quick-editor is a little tool by [Luma Montes][luma] for turning photos of drawings into clean, transparent SVGs. I made it to get drawings out of my notebooks and into [Lumassets][lumassets].
 
-![The Pieces step in Quick-editor, with three drawings marked on the Monstrinhos page.](docs/studio-screenshot.png)
+![Fofolete, a little character with glasses and a striped sweater, in Quick-editor’s ink preview. The cleaning controls sit to the right.](docs/studio-screenshot.png)
 
-It runs on your machine and opens in the browser. Put a scan or photo in the inbox, then work through **Frame**, **Clean**, **Pieces**, and **Review**. Straighten the page, adjust what counts as ink, and draw a box or lasso around each piece you want to keep. You can stop and come back to the same page later.
+That’s Fofolete in the ink preview. Start with a photo or scan, pick the drawing you want to keep, and save it as an SVG. Everything runs on your machine.
 
 ## Install and run
 
@@ -15,14 +15,22 @@ brew install uv potrace
 uv tool install git+https://github.com/lumamontes/quick-editor
 ```
 
-From the folder where you keep your drawings:
+Open a terminal in the folder where you keep your drawings:
 
 ```sh
 quick-editor init
+mkdir -p inbox
 quick-editor
 ```
 
-Put photos in `inbox/` and select one at [localhost:4400](http://localhost:4400). JPG, PNG, HEIC, AVIF, TIFF, and WebP all work. Use `quick-editor --project <folder>` to open a different project.
+Copy a photo to `inbox/` and pick it in the sidebar at [localhost:4400](http://localhost:4400). JPG, PNG, HEIC, AVIF, TIFF, and WebP all work.
+
+1. **Frame.** Mark the corners to straighten the page. For a flat scan, choose **Whole photo**.
+2. **Clean.** Adjust the preview until you can see the lines you want to keep.
+3. **Pieces.** Draw a box or lasso around each drawing you want to save.
+4. **Review.** Give each piece a name and choose **Save checked pieces**.
+
+Quick-editor saves your place as you work. Use `quick-editor --project <folder>` to open a different project.
 
 ## What it saves
 
