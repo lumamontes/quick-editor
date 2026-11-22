@@ -4,7 +4,7 @@ quick-editor is a little tool by [Luma Montes][luma] for turning photos of drawi
 
 ![Fofolete, a little character with glasses and a striped sweater, in Quick-editor’s ink preview. The cleaning controls sit to the right.](docs/studio-screenshot.png)
 
-That’s Fofolete in the ink preview. Start with a photo or scan, pick the drawing you want to keep, and save it as an SVG. Everything runs on your machine.
+Start with a photo or scan, pick the drawing you want to keep, and save it as an SVG. Everything runs on your machine.
 
 ## Install and run
 
