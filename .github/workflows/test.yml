@@ -1,0 +1,22 @@
+name: Tests
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get update && sudo apt-get install -y potrace
+      - uses: astral-sh/setup-uv@v6
+      - name: Tests
+        run: uv run --python 3.12 --with pytest pytest -q
+      - name: Known vulnerabilities in dependencies
+        run: uv run --python 3.12 --with pip-audit pip-audit --skip-editable
